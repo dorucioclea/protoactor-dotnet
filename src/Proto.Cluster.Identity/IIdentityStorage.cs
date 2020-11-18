@@ -4,12 +4,13 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public interface IIdentityStorage: IDisposable
+    public interface IIdentityStorage : IDisposable
     {
-        public Task<StoredActivation?> TryGetExistingActivationAsync(ClusterIdentity clusterIdentity, CancellationToken ct);
+        public Task<StoredActivation?> TryGetExistingActivationAsync(ClusterIdentity clusterIdentity,
+            CancellationToken ct);
 
         public Task<SpawnLock?> TryAcquireLockAsync(ClusterIdentity clusterIdentity, CancellationToken ct);
-        
+
         public Task<StoredActivation?> WaitForActivationAsync(ClusterIdentity clusterIdentity, CancellationToken ct);
 
         public Task RemoveLock(SpawnLock spawnLock, CancellationToken ct);
@@ -58,7 +59,7 @@
         }
 
         public PID Pid { get; }
-        public string MemberId;
+        public string MemberId { get; }
     }
 
     public class StorageFailure : Exception
@@ -68,6 +69,13 @@
         }
 
         public StorageFailure(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
+
+    public class LockNotFoundException : StorageFailure
+    {
+        public LockNotFoundException(string message) : base(message)
         {
         }
     }
